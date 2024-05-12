@@ -12,3 +12,68 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id              String           @id
+  username        String
+  email           String
+  imageURL        String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  isWorking       Boolean          @default(false)
+  projectsCreated Project[]        @relation("createdByUser")
+  projectsJoined  Project[]        @relation("joinedByUser")
+  searchHistory   SearchHistory?
+  userInfo        UserInformation?
+  skills          Skill[]
+}
+
+model Project {
+  id             String   @id @default(uuid())
+  name           String
+  description    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  startDate      DateTime
+  endDate        DateTime
+  creator        User     @relation("createdByUser", fields: [creatorID], references: [id])
+  creatorID      String   @unique
+  members        User[]   @relation("joinedByUser")
+  skillsRequired Skill[]
+}
+
+model UserInformation {
+  id          String  @id @default(uuid())
+  location    String?
+  phone       String?
+  portfolio   String?
+  github      String?
+  description String
+  user        User    @relation(fields: [userId], references: [id])
+  userId      String  @unique
+}
+
+model SearchHistory {
+  id       String   @id @default(uuid())
+  user     User     @relation(fields: [userId], references: [id])
+  searches String[]
+  userId   String   @unique
+}
+
+enum SkillLevel {
+  TRAINEE
+  JUNIOR
+  SEMISENIOR
+  SENIOR
+  EXPERT
+}
+
+model Skill {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  level     SkillLevel
+  User      User?      @relation(fields: [userId], references: [id])
+  userId    String?
+  Project   Project?   @relation(fields: [projectId], references: [id])
+  projectId String?
+}
