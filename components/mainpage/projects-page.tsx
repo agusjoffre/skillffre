@@ -4,7 +4,7 @@ type Props = {
   typeofProject: 'you' | 'all';
 };
 
-const ProjectPage = ({ typeofProject }: Props) => {
+const ProjectSection = ({ typeofProject }: Props) => {
   /* if typeofproject = 'all' => get all projects
     if typeofproject = 'you' => get algorithm projects */
 
@@ -34,4 +34,4 @@ const ProjectPage = ({ typeofProject }: Props) => {
   );
 };
 
-export default ProjectPage;
+export default ProjectSection;

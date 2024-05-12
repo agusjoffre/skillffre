@@ -1,4 +1,4 @@
-import ProjectPage from '@/components/mainpage/projects-page';
+import ProjectSection from '@/components/mainpage/projects-page';
 import { initUser } from '@/lib/actions/userActions/initUser';
 import { currentUser } from '@clerk/nextjs/server';
 
@@ -8,9 +8,9 @@ const Home = async () => {
 
   return (
     <main className="flex flex-col gap-10 py-16">
-      {user ? <ProjectPage typeofProject="you" /> : null}
+      {user ? <ProjectSection typeofProject="you" /> : null}
       {/* <Banner /> */}
-      <ProjectPage typeofProject="all" />
+      <ProjectSection typeofProject="all" />
     </main>
   );
 };
