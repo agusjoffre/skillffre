@@ -2,13 +2,12 @@
 import prisma from '@/prisma/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { User } from '@prisma/client';
-import { redirect } from 'next/navigation';
 
-export const initUser = async (): Promise<User> => {
+export const initUser = async (): Promise<User | null> => {
   const user = await currentUser();
 
   /* check if user is logged*/
-  if (!user) redirect('/register');
+  if (!user) return null;
   /* ---------------------------------------------------- */
 
   /* check if user exists in db */
