@@ -3,6 +3,7 @@ import ThemeProvider from '@/components/theme-provider';
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Toaster } from '@/components/ui/sonner';
 
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <Header />
             {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

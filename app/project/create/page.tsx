@@ -1,9 +1,11 @@
-import React from 'react';
+import CreateProjectForm from '@/components/createproject/create-project-form';
 
-type Props = {};
-
-const CreateProjectPage = (props: Props) => {
-  return <main className="px-8 py-10 xl:px-72">CreateProjectPage</main>;
+const CreateProjectPage = () => {
+  return (
+    <main className="px-8 py-10 xl:px-72">
+      <CreateProjectForm />
+    </main>
+  );
 };
 
 export default CreateProjectPage;
