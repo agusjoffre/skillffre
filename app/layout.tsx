@@ -3,7 +3,7 @@ import ThemeProvider from '@/components/theme-provider';
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import QueryProvider from './QueryProvider';
@@ -25,12 +25,12 @@ export default function RootLayout({
     <ClerkProvider>
       <QueryProvider>
         <html lang="en">
-          <body className={cn('min-h-screen bg-background font-sans antialiased', inter.variable)}>
+          <body className={cn('flex min-h-screen flex-col   bg-background font-sans antialiased', inter.variable)}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
               <Header />
               {children}
-              <Toaster />
             </ThemeProvider>
+            <Toaster />
           </body>
         </html>
       </QueryProvider>

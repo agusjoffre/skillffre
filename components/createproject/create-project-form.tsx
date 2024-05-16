@@ -10,6 +10,8 @@ import ButtonSubmit from '../button-submit';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
+import Error from '../error';
 
 export const formSchema = z.object({
   name: z
@@ -37,6 +39,8 @@ const CreateProjectForm = () => {
     },
   });
 
+  const { toast } = useToast();
+
   const {
     mutate: server_createProject,
     isPending: queryIsPending,
@@ -44,7 +48,23 @@ const CreateProjectForm = () => {
     data: queryData,
   } = useMutation({
     mutationFn: createProject,
-    /* toast on success & error */
+    onError: (error) => {
+      console.log('error on fetch');
+      toast({
+        title: error.message,
+        duration: 2000,
+        variant: 'destructive',
+      });
+    },
+    onMutate: () => {
+      console.log('mutating');
+      toast({
+        title: 'Creating project...',
+        duration: 2000,
+        variant: 'default',
+        className: 'bg-foreground text-background',
+      });
+    },
   });
 
   const router = useRouter();
@@ -52,23 +72,33 @@ const CreateProjectForm = () => {
   useEffect(() => {
     if (queryData) {
       if (queryData.status === 'success') {
-        /* toast on success with message*/
-        router.push(`/projects/${queryData.project?.id}`);
+        console.log('querydata success');
+        toast({
+          title: queryData.message,
+          description: `${queryData.project?.name} ${queryData.project?.startDate} - ${queryData.project?.endDate}`,
+          duration: 1600,
+          variant: 'default',
+          className: 'bg-accent text-accent-foreground ',
+        });
+        router.push(`/`);
       }
       if (queryData.status === 'error') {
-        /* toast on error with message */
+        console.log('querydata error');
+        toast({
+          title: queryData.message,
+          duration: 2000,
+          variant: 'destructive',
+        });
+        router.push('/projects/create');
       }
     }
-  }, [queryData, router]);
+  }, [queryData, router, toast]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     server_createProject(values);
   };
 
-  /* make a loading component later */
-  if (queryIsPending) return <div>Loading...</div>;
-  /* make an error component later */
-  if (queryError) return <div>Error: {queryError.message}</div>;
+  if (queryError) return <Error message={queryError.message} />;
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -79,7 +109,13 @@ const CreateProjectForm = () => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Edit two videos..." {...field} className="bg-none" />
+                <Input
+                  placeholder="Edit two videos..."
+                  {...field}
+                  className="bg-none"
+                  disabled={queryIsPending}
+                  required
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -92,7 +128,13 @@ const CreateProjectForm = () => {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea className="max-h-28 min-h-28" placeholder="Edit two videos..." {...field} required />
+                <Textarea
+                  className="max-h-28 min-h-28"
+                  placeholder="Edit two videos..."
+                  {...field}
+                  required
+                  disabled={queryIsPending}
+                />
               </FormControl>
               <FormDescription>Try to be clear with your goals and needs</FormDescription>
               <FormMessage />
@@ -106,7 +148,7 @@ const CreateProjectForm = () => {
             <FormItem>
               <FormLabel>Start date</FormLabel>
               <FormControl>
-                <Input type="date" {...field} required />
+                <Input type="date" {...field} required disabled={queryIsPending} />
               </FormControl>
               <FormDescription>When you want to start working on this project.</FormDescription>
               <FormMessage />
@@ -121,7 +163,7 @@ const CreateProjectForm = () => {
             <FormItem>
               <FormLabel>End date</FormLabel>
               <FormControl>
-                <Input type="date" {...field} required />
+                <Input type="date" {...field} required disabled={queryIsPending} />
               </FormControl>
               <FormDescription>When you want to end this project.</FormDescription>
               <FormMessage />
