@@ -1,3 +1,4 @@
+'use server';
 import { formSchema } from '@/components/createproject/create-project-form';
 import prisma from '@/prisma/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';

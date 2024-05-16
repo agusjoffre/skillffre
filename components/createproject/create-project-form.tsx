@@ -2,18 +2,20 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-
-import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '../ui/textarea';
 import { createProject } from '@/lib/actions/projectActions/createProject';
+import ButtonSubmit from '../button-submit';
+import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export const formSchema = z.object({
   name: z
     .string()
     .min(2, { message: 'Name must be at least 2 characters.' })
-    .max(25, { message: 'Name must be less than 25 characters.' }),
+    .max(60, { message: 'Name must be less than 60 characters.' }),
   description: z
     .string()
     .min(4, { message: 'Description must be at least 4 characters.' })
@@ -35,12 +37,38 @@ const CreateProjectForm = () => {
     },
   });
 
+  const {
+    mutate: server_createProject,
+    isPending: queryIsPending,
+    error: queryError,
+    data: queryData,
+  } = useMutation({
+    mutationFn: createProject,
+    /* toast on success & error */
+  });
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (queryData) {
+      if (queryData.status === 'success') {
+        /* toast on success with message*/
+        router.push(`/projects/${queryData.project?.id}`);
+      }
+      if (queryData.status === 'error') {
+        /* toast on error with message */
+      }
+    }
+  }, [queryData, router]);
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    createProject(values);
-    form.reset();
-    form.clearErrors();
+    server_createProject(values);
   };
 
+  /* make a loading component later */
+  if (queryIsPending) return <div>Loading...</div>;
+  /* make an error component later */
+  if (queryError) return <div>Error: {queryError.message}</div>;
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -51,7 +79,7 @@ const CreateProjectForm = () => {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Edit two videos..." {...field} required />
+                <Input placeholder="Edit two videos..." {...field} className="bg-none" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,10 +128,7 @@ const CreateProjectForm = () => {
             </FormItem>
           )}
         />
-
-        <Button type="submit" variant={'accent'}>
-          Create
-        </Button>
+        <ButtonSubmit text="Create" variant="accent" />
       </form>
     </Form>
   );
