@@ -2,7 +2,7 @@
 
     [] Add skills to project form
     [] Get all projects fns & display
-    [] Singular project page
+    [] Single project page
     [] Edit project fns & display
     [] My info page
     [] Edit my info fns & display

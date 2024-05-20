@@ -1,15 +1,11 @@
 'use server';
 import { formSchema } from '@/components/createproject/create-project-form';
+import { Status } from '@/lib/types';
 import prisma from '@/prisma/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { Project } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-
-enum ProjectStatus {
-  SUCCESS = 'success',
-  ERROR = 'error',
-}
 
 enum ProjectMessage {
   PROJECT_CREATED = 'Project created successfully',
@@ -19,7 +15,7 @@ enum ProjectMessage {
 
 export const createProject = async (
   values: z.infer<typeof formSchema>,
-): Promise<{ status: ProjectStatus; message: ProjectMessage; project: Project | null }> => {
+): Promise<{ status: Status; message: ProjectMessage; project: Project | null }> => {
   const user = await currentUser();
   if (!user) redirect('/register');
 
@@ -39,15 +35,14 @@ export const createProject = async (
     },
   });
   if (existingProject)
-    return { status: ProjectStatus.ERROR, message: ProjectMessage.PROJECT_EXISTS, project: existingProject };
+    return { status: Status.ERROR, message: ProjectMessage.PROJECT_EXISTS, project: existingProject };
 
   /* create new project */
   const createdProject = await prisma.project.create({ data: newProject });
-  if (!createdProject)
-    return { status: ProjectStatus.ERROR, message: ProjectMessage.PROJECT_NOT_CREATED, project: null };
+  if (!createdProject) return { status: Status.ERROR, message: ProjectMessage.PROJECT_NOT_CREATED, project: null };
 
   return {
-    status: ProjectStatus.SUCCESS,
+    status: Status.SUCCESS,
     message: ProjectMessage.PROJECT_CREATED,
     project: createdProject,
   };

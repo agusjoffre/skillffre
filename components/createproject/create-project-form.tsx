@@ -1,17 +1,18 @@
 'use client';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '../ui/textarea';
-import { createProject } from '@/lib/actions/projectActions/createProject';
-import ButtonSubmit from '../button-submit';
-import { useMutation } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
+import { createProject } from '@/lib/actions/projectActions/createProject';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import ButtonSubmit from '../button-submit';
 import Error from '../error';
+import { Textarea } from '../ui/textarea';
+import CreateSkillsDialog from './create-skills-dialog';
 
 export const formSchema = z.object({
   name: z
@@ -72,7 +73,6 @@ const CreateProjectForm = () => {
   useEffect(() => {
     if (queryData) {
       if (queryData.status === 'success') {
-        console.log('querydata success');
         toast({
           title: queryData.message,
           description: `${queryData.project?.name} ${queryData.project?.startDate} - ${queryData.project?.endDate}`,
@@ -83,7 +83,6 @@ const CreateProjectForm = () => {
         router.push(`/`);
       }
       if (queryData.status === 'error') {
-        console.log('querydata error');
         toast({
           title: queryData.message,
           duration: 2000,
@@ -141,6 +140,7 @@ const CreateProjectForm = () => {
             </FormItem>
           )}
         />
+        <CreateSkillsDialog />
         <FormField
           control={form.control}
           name="startDate"
