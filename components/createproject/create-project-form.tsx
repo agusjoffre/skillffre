@@ -3,16 +3,19 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { createProject } from '@/lib/actions/projectActions/createProject';
+import { levels } from '@/lib/constants';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Level } from '@prisma/client';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import ButtonSubmit from '../button-submit';
+import CreateSkillsDialog from '../createskills/create-skills-dialog';
 import Error from '../error';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
-import CreateSkillsDialog from './create-skills-dialog';
 
 export const formSchema = z.object({
   name: z
@@ -25,7 +28,7 @@ export const formSchema = z.object({
     .max(150, { message: 'Description must be less than 150 characters.' }),
   startDate: z.string(),
   endDate: z.string(),
-  skills: z.array(z.string()),
+  projectLevel: z.nativeEnum(Level),
 });
 
 const CreateProjectForm = () => {
@@ -36,7 +39,7 @@ const CreateProjectForm = () => {
       endDate: new Date().toDateString(),
       description: '',
       name: '',
-      skills: [''],
+      projectLevel: levels[0],
     },
   });
 
@@ -88,7 +91,7 @@ const CreateProjectForm = () => {
           duration: 2000,
           variant: 'destructive',
         });
-        router.push('/projects/create');
+        router.push('/project/create');
       }
     }
   }, [queryData, router, toast]);
@@ -141,35 +144,64 @@ const CreateProjectForm = () => {
           )}
         />
         <CreateSkillsDialog />
-        <FormField
-          control={form.control}
-          name="startDate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Start date</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} required disabled={queryIsPending} />
-              </FormControl>
-              <FormDescription>When you want to start working on this project.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <FormField
           control={form.control}
-          name="endDate"
+          name="projectLevel"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>End date</FormLabel>
+              <FormLabel>Project level</FormLabel>
               <FormControl>
-                <Input type="date" {...field} required disabled={queryIsPending} />
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select project level" {...field} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {levels.map((level) => {
+                      return (
+                        <SelectItem className="cursor-pointer" key={level} value={level}>
+                          {level.charAt(0).toUpperCase() + level.slice(1).toLowerCase()}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </FormControl>
-              <FormDescription>When you want to end this project.</FormDescription>
-              <FormMessage />
             </FormItem>
           )}
         />
+        <div className="flex items-center gap-2 sm:gap-4">
+          <FormField
+            control={form.control}
+            name="startDate"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Start date</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} required disabled={queryIsPending} />
+                </FormControl>
+                <FormDescription>When you want to start working on this project.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="endDate"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>End date</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} required disabled={queryIsPending} />
+                </FormControl>
+                <FormDescription>When you want to end this project.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <ButtonSubmit text="Create" variant="accent" />
       </form>
     </Form>

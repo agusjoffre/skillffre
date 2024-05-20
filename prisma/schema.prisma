@@ -34,6 +34,7 @@ model Project {
   creatorID      String
   members        User[]   @relation("joinedByUser")
   skillsRequired Skill[]
+  projectLevel   Level    @default(JUNIOR)
 }
 
 model UserInformation {
@@ -54,7 +55,7 @@ model SearchHistory {
   userId   String   @unique
 }
 
-enum SkillLevel {
+enum Level {
   TRAINEE
   JUNIOR
   SEMISENIOR
@@ -63,11 +64,10 @@ enum SkillLevel {
 }
 
 model Skill {
-  id        String     @id @default(uuid())
-  name      String     @unique
-  level     SkillLevel
-  User      User?      @relation(fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  name      String   @unique
+  User      User?    @relation(fields: [userId], references: [id])
   userId    String?
-  Project   Project?   @relation(fields: [projectId], references: [id])
+  Project   Project? @relation(fields: [projectId], references: [id])
   projectId String?
 }

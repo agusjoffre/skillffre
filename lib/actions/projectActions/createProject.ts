@@ -1,6 +1,5 @@
 'use server';
 import { formSchema } from '@/components/createproject/create-project-form';
-import { Status } from '@/lib/types';
 import prisma from '@/prisma/prismaClient';
 import { currentUser } from '@clerk/nextjs/server';
 import { Project } from '@prisma/client';
@@ -11,6 +10,11 @@ enum ProjectMessage {
   PROJECT_CREATED = 'Project created successfully',
   PROJECT_EXISTS = 'Project already exists',
   PROJECT_NOT_CREATED = 'Project could not be created',
+}
+
+enum Status {
+  SUCCESS = 'success',
+  ERROR = 'error',
 }
 
 export const createProject = async (
@@ -25,6 +29,7 @@ export const createProject = async (
     description: values.description,
     startDate: values.startDate,
     endDate: values.endDate,
+    projectLevel: values.projectLevel,
   };
 
   /* checking if a project already exists with the same name and creator */

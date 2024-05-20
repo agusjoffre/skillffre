@@ -13,6 +13,9 @@ enum SkillMessage {
 export const createSkill = async (): Promise<{ status: Status; message: SkillMessage; skill: Skill | null }> => {
   const user = await currentUser();
   if (!user) return { status: Status.ERROR, message: SkillMessage.SKILL_NOT_CREATED, skill: null };
+
+  // check if exists
+
   return {
     status: Status.SUCCESS,
     message: SkillMessage.SKILL_CREATED,
